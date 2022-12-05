@@ -1,62 +1,43 @@
-const firebase_admin = require("firebase-admin");
-const firebaseAdminKey = require("./firebase-admin-key.json");
+const fcm_notification = require("./src/fcmNotificationHandler").fcm_notification;
+const admin = require("./src/firebaseAdmin").admin;
+const utils = require("./src/utils").utils;
 
-firebase_admin.initializeApp({
-  credential: firebase_admin.credential.cert(firebaseAdminKey),
-  databaseURL: `https://${firebaseAdminKey.project_id}.firebaseio.com`,
-});
+const firestore = admin.firestore;
+const isToday = utils.isToday;
+const getUserData = utils.getUserData;
 
-let firestore = firebase_admin.firestore();
-let messeging = firebase_admin.messaging();
-let storage = firebase_admin.storage();
-
-let lastPayload = {};
+let lastMessageTime = null;
 
 firestore.collectionGroup("messages").onSnapshot((snapshot) => {
   snapshot.docChanges().forEach(async (change) => {
-    let receiver = await getUserData(change.doc.data().recieverId);
-    let sender = await getUserData(change.doc.data().senderId);
+    message = change.doc.data();
+    const timeStamp = new Date(message.timeStamp);
+
+    if (!isToday(timeStamp)) {
+      return;
+    }
+
+    if (lastMessageTime == message.timeStamp) {
+      return;
+    }
+
+    lastMessageTime = message.timeStamp;
+    let receiver = await getUserData(message.recieverId);
+    let sender = await getUserData(message.senderId);
+
     const token = receiver.fcmToken;
     const title = sender.name;
-    let body = change.doc.data().text;
+
+    let body = message.text;
     if (body.length > 15) body = body.substring(0, 15) + "...";
 
     const data_body = {
-      sender: {
-        senderId: change.doc.data().senderId,
-        senderName: sender.name,
-        senderProfilePic: sender.profilePic,
-      },
-      messageType: change.doc.data().type,
+      senderId: message.senderId,
+      senderName: sender.name,
+      senderProfilePic: sender.profilePic,
+      messageType: message.type,
     };
 
     fcm_notification(token, title, body, data_body);
   });
 });
-
-function fcm_notification(token, title, body, data_body) {
-  payload = {
-    notification: {
-      title: title,
-      body: body,
-    },
-    data: data_body,
-  };
-  if (JSON.stringify(lastPayload) === JSON.stringify(payload)) {
-    console.log("Same Payload");
-    return;
-  }
-  lastPayload = payload;
-  messeging.sendToDevice(token, payload).then((response) => {
-    console.log(
-      "Successfully sent message:",
-      response,
-      "\nwith payload:",
-      payload
-    );
-  });
-}
-
-async function getUserData(uid) {
-  return (await firestore.collection("users").doc(uid).get()).data();
-}
