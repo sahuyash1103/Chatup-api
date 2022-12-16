@@ -36,6 +36,8 @@ function initNotificationService() {
         messageType: message.type,
       };
 
+      console.log()
+
       fcm_notification(token, title, body, data_body);
     });
   });
