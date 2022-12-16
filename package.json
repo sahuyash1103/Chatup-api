@@ -8,10 +8,15 @@
   },
   "author": "unreal developer",
   "license": "ISC",
-  "devDependencies": {},
   "dependencies": {
+    "blurhash": "^2.0.4",
+    "config": "^3.3.8",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "firebase-admin": "^11.3.0"
+    "firebase-admin": "^11.3.0",
+    "helmet": "^6.0.1",
+    "morgan": "^1.10.0",
+    "winston": "^3.8.2"
   }
 }

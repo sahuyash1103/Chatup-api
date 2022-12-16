@@ -1,0 +1,6 @@
+{
+  "mongoURL": "",
+  "jwtPrivateKey": "",
+  "node_env": "development",
+  "port": ""
+}

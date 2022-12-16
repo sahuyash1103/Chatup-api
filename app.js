@@ -1,43 +1,49 @@
-const fcm_notification = require("./src/fcmNotificationHandler").fcm_notification;
-const admin = require("./src/firebaseAdmin").admin;
-const utils = require("./src/utils").utils;
+const express = require("express");
+const cors = require("cors");
+const morgan = require("morgan");
+const helmet = require("helmet");
+require("dotenv").config();
 
-const firestore = admin.firestore;
-const isToday = utils.isToday;
-const getUserData = utils.getUserData;
+// const logger = require("./logger/logger");
+const { node_env, port } = require("./utils/env_config");
+const {
+  initNotificationService,
+} = require("./notification_service/notification_service");
 
-let lastMessageTime = null;
+const { storage } = require("./notification_service/firebaseAdmin");
 
-firestore.collectionGroup("messages").onSnapshot((snapshot) => {
-  snapshot.docChanges().forEach(async (change) => {
-    message = change.doc.data();
-    const timeStamp = new Date(message.timeStamp);
+const app = express();
 
-    if (!isToday(timeStamp)) {
-      return;
-    }
+let logger = console;
 
-    if (lastMessageTime == message.timeStamp) {
-      return;
-    }
+// ------------------------------------- INIT NOTIFICATION SERVICE
+initNotificationService();
 
-    lastMessageTime = message.timeStamp;
-    let receiver = await getUserData(message.recieverId);
-    let sender = await getUserData(message.senderId);
+//---------------------------------------CORS OPTIONS
+const corsOptions = {};
+app.use(cors(corsOptions));
 
-    const token = receiver.fcmToken;
-    const title = sender.name;
+//----------------------MIDDLEWARES
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-    let body = message.text;
-    if (body.length > 15) body = body.substring(0, 15) + "...";
+app.use(helmet());
 
-    const data_body = {
-      senderId: message.senderId,
-      senderName: sender.name,
-      senderProfilePic: sender.profilePic,
-      messageType: message.type,
-    };
+if (node_env === "development") {
+  app.use(morgan("tiny"));
+  logger.info("morgan is enabled");
+}
 
-    fcm_notification(token, title, body, data_body);
-  });
+// ---------------------------------------HOME ROUTE
+app.get("/api", (req, res) => {
+  res.send({ conected: true, message: "server is running well" });
 });
+
+app.get("/api/chats/images/:imgId", (req, res) => {
+  let imageId = req.params.imgId;
+  let body = req.body;
+  let image = storage.bucket().file(`/chats/images/`);
+});
+
+// ---------------------------------------LISTNING TO CLIENTS
+app.listen(port || 3001, () => logger.info(`server is listning....`));

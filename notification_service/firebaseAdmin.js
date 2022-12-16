@@ -10,7 +10,7 @@ let firestore = firebase_admin.firestore();
 let messeging = firebase_admin.messaging();
 let storage = firebase_admin.storage();
 
-module.exports.admin = {
+module.exports = {
   firestore,
   messeging,
   storage,

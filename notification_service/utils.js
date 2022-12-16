@@ -1,6 +1,4 @@
-const admin = require("./firebaseAdmin");
-
-const firestore = admin.admin.firestore;
+const { firestore } = require("./firebaseAdmin");
 
 function isToday(date) {
   const today = new Date();
@@ -16,7 +14,7 @@ async function getUserData(uid) {
   return (await firestore.collection("users").doc(uid).get()).data();
 }
 
-module.exports.utils = {
+module.exports = {
   isToday,
   getUserData,
 };

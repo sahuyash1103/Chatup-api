@@ -1,5 +1,4 @@
-const admin = require("./firebaseAdmin").admin;
-const messeging = admin.messeging;
+const { messeging } = require("./firebaseAdmin");
 
 function fcm_notification(token, title, body, data_body) {
   payload = {
@@ -11,7 +10,8 @@ function fcm_notification(token, title, body, data_body) {
   };
   messeging.sendToDevice(token, payload).then((response) => {
     console.log(
-      "Successfully sent message:",
+      "\n\n********************************************************************\n\n",
+      "Successfully sent Notification:",
       response,
       "\n\n********************************************************************\n\n"
     );
