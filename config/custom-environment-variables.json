@@ -1,4 +1,4 @@
 {
   "jwtPrivateKey": "CHAT_UP_JWT_PRIVATE_KEY",
-  "firebase_admin_key": "FIREBASE_ADMIN_KEY"
+  "firebase_admin_key_path": "FIREBASE_ADMIN_KEY_PATH"
 }
