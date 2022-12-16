@@ -1,6 +1,6 @@
 {
-  "mongoURL": "",
   "jwtPrivateKey": "",
   "node_env": "development",
-  "port": ""
+  "port": "",
+  "firebase_admin_key": ""
 }

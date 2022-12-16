@@ -1,5 +1,6 @@
 const firebase_admin = require("firebase-admin");
-const firebaseAdminKey = require("../firebase-admin-key.json");
+const { firebase_admin_key_path } = require("../utils/env_config");
+const firebaseAdminKey = require(firebase_admin_key_path);
 
 firebase_admin.initializeApp({
   credential: firebase_admin.credential.cert(firebaseAdminKey),
