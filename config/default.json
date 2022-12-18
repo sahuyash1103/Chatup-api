@@ -2,5 +2,5 @@
   "jwtPrivateKey": "",
   "node_env": "development",
   "port": "",
-  "firebase_admin_key_path": ""
+  "firebase_admin_key": ""
 }

@@ -11,7 +11,7 @@ function initNotificationService() {
       message = change.doc.data();
       const timeStamp = new Date(message.timeStamp);
 
-      if (!isToday(timeStamp)) {
+      if (!isToday(timeStamp) || message["isSeen"]) {
         return;
       }
 
@@ -35,8 +35,6 @@ function initNotificationService() {
         senderProfilePic: sender.profilePic,
         messageType: message.type,
       };
-
-      console.log()
 
       fcm_notification(token, title, body, data_body);
     });
